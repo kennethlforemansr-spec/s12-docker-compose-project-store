@@ -567,3 +567,4 @@ Inside Docker Compose, `localhost` means the current container, not your laptop.
 Before sharing the repository with students, make sure completed Compose solutions are not included in the student branch. In particular, remove or hide any existing `docker-compose.yml` files that already solve the deployment.
 
 The students should receive the source code, Dockerfiles, and this project document, but not a finished Compose file.
+# s11-revive-app
