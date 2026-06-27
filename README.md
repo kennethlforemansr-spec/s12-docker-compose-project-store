@@ -26,8 +26,23 @@ By completing this project, you will practice:
 - Docker Compose service definitions, networking, ports, environment variables, and dependencies.
 - Debugging container startup issues with `docker compose ps`, `docker compose logs`, and `curl`.
 - Understanding how microservices communicate inside a Docker Compose network.
+- Using AI tools responsibly to study a codebase, ask better technical questions, and understand implementation choices.
 
 This project will be reviewed and worked through in class. You are still expected to try it yourself first, document your work, and bring clear questions when you get stuck.
+
+## Using AI Tools
+
+You are encouraged to use AI tools such as Claude, Codex, ChatGPT, or similar assistants to help you study the codebase, understand the services, create your Docker Compose plan, troubleshoot errors, and complete the project.
+
+Do not use AI only to generate files without understanding them. When you use AI, ask it to explain what it is doing and why. Ask it to teach you the purpose of each service, each environment variable, each Dockerfile, and each Docker Compose section. You should be able to explain your final solution in your own words.
+
+Good AI prompts for this project include:
+
+- `Study this repository and explain the services I need to deploy with Docker Compose.`
+- `Explain this Dockerfile line by line.`
+- `Help me understand why this service needs this environment variable.`
+- `Review my docker-compose.yml and tell me what might fail.`
+- `Explain this Docker Compose error and teach me how to debug it.`
 
 ## Student Challenge
 
