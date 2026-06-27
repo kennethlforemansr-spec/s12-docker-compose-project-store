@@ -6,11 +6,32 @@ Your task is to containerize and deploy the AWS Containers Retail Sample applica
 
 You are given the application source code repository, but you are not given a completed `docker-compose.yml` file. You must study the service source folders, build the required Docker images, define the service dependencies, configure the correct environment variables, and run the full application stack on your machine.
 
+This project is a practical DevOps exercise. You will work like a junior DevOps engineer who receives an application codebase and must prepare a repeatable local deployment for a multi-service application.
+
 At the end of the project, the retail store frontend must be available at:
 
 ```text
 http://localhost:8888
 ```
+
+## Learning Objectives
+
+By completing this project, you will practice:
+
+- Linux command-line navigation, file inspection, and troubleshooting.
+- Git workflow with feature branches, commits, and clean working-tree habits.
+- GitHub collaboration by pushing your work to a remote repository.
+- Docker image builds from real application source code.
+- Dockerfile usage across Java, Go, Node.js, and Nginx services.
+- Docker Compose service definitions, networking, ports, environment variables, and dependencies.
+- Debugging container startup issues with `docker compose ps`, `docker compose logs`, and `curl`.
+- Understanding how microservices communicate inside a Docker Compose network.
+
+This project will be reviewed and worked through in class. You are still expected to try it yourself first, document your work, and bring clear questions when you get stuck.
+
+## Student Challenge
+
+The first 10 S11/S12 students who complete this project successfully will receive `$100` each from DevOps Easy Learning.
 
 ## Application Overview
 
