@@ -33,7 +33,7 @@ describe('when on cart', function() {
   });
 
   it('should have title', function() {
-    expect(cart.getTitle()).toEqual('Retail Store Sample App');
+    expect(cart.getTitle()).toEqual('Devopseasylearning S12 Project01 App');
   });
 
   it('should have breadcrumb', function() {

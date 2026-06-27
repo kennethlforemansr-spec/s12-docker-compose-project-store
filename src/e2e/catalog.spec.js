@@ -31,7 +31,7 @@ describe('when on catalog', function() {
   });
 
   it('should have title', function() {
-    expect(catalog.getTitle()).toEqual('Retail Store Sample App');
+    expect(catalog.getTitle()).toEqual('Devopseasylearning S12 Project01 App');
   });
 
   it('should have breadcrumb', function() {

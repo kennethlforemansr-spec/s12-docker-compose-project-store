@@ -33,7 +33,7 @@ describe('when on homepage', function() {
   });
 
   it('should have a title', function() {
-    expect(homepage.getTitle()).toEqual('Retail Store Sample App');
+    expect(homepage.getTitle()).toEqual('Devopseasylearning S12 Project01 App');
   });
 
   describe('and open Home', function() {
