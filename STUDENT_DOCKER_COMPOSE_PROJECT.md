@@ -467,17 +467,6 @@ http://localhost:8080
 
 Inside Docker Compose, `localhost` means the current container, not your laptop.
 
-## Grading Criteria
-
-| Area | Points |
-|---|---:|
-| Correct Docker images built from source | 20 |
-| Correct Compose service definitions | 20 |
-| Correct environment variables | 20 |
-| Correct service dependencies and networking | 15 |
-| Application works in browser on port `8888` | 15 |
-| Clear deployment notes and evidence | 10 |
-
 ## Instructor Note
 
 Before sharing the repository with students, make sure completed Compose solutions are not included in the student branch. In particular, remove or hide any existing `docker-compose.yml` files that already solve the deployment.

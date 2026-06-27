@@ -4,6 +4,8 @@
 *.tfstate*
 *.lock.hcl
 *.log
+docker-compose.yml
+compose.yml
 .vscode
 reports
 env
