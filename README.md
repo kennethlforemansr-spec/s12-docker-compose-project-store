@@ -73,6 +73,26 @@ graph TD
     assets[assets] --> ui
 ```
 
+## Git Workflow
+
+Do not commit your work directly on the `main` branch.
+
+Create a feature branch before making changes. Use this preferred naming pattern:
+
+```text
+feature/<your-name>-docker-compose-project
+```
+
+Example:
+
+```bash
+git checkout -b feature/jane-doe-docker-compose-project
+```
+
+Commit your work on your feature branch and push that branch when you are ready to submit.
+
+If you have any issue with the project, Docker, Git, or the deployment process, contact the Catch Up instructor before submitting.
+
 ## Required Deliverables
 
 Submit the following:
