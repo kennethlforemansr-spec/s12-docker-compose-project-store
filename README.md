@@ -48,6 +48,12 @@ Good AI prompts for this project include:
 
 The first 10 S11/S12 students who complete this project successfully will receive `$100` each from DevOps Easy Learning.
 
+## Due Date
+
+This project is due on Sunday, July 05, 2026 before class.
+
+Submit your work before class starts. Late or incomplete submissions may not qualify for the student challenge.
+
 ## Application Overview
 
 The application is a microservices-based retail store. It contains a frontend UI, backend API services, static assets, and several backing services for persistence and messaging.
@@ -127,6 +133,8 @@ git checkout -b feature/jane-doe-docker-compose-project
 
 Commit your work on your feature branch and push that branch when you are ready to submit.
 
+Create or update a `README.md` file in your own feature branch with your deployment notes, screenshots, and final project evidence.
+
 If you have any issue with the project, Docker, Git, or the deployment process, contact the Catch Up instructor before submitting.
 
 ## Required Deliverables
@@ -135,16 +143,19 @@ Submit the following:
 
 1. A working `docker-compose.yml` file created by you.
 2. Any Dockerfiles you create or modify.
-3. A short `DEPLOYMENT_NOTES.md` explaining:
+3. A project `README.md` in your own branch explaining:
    - how to build the images,
    - how to start the application,
    - how to stop and remove the containers,
-   - which URL to open in the browser,
+   - which URL to open in the browser on the school server,
    - any problems you encountered and how you solved them.
-4. Screenshots or terminal output showing:
+4. Screenshots in your branch showing:
+   - your terminal with the application running,
    - `docker compose ps`,
-   - successful access to `http://localhost:8888`,
-   - successful access to `http://localhost:8888/catalog`.
+   - the website working in a browser,
+   - successful access to the homepage,
+   - successful access to the catalog page.
+5. Deploy the application on the school server and include the working server URL in your `README.md`.
 
 ## Important Rule
 
@@ -223,6 +234,14 @@ Only the services that need browser or host access should publish ports to your 
 | `rabbitmq` | `5672` | `5672` | RabbitMQ broker, optional host access |
 
 The other services can stay internal to the Compose network.
+
+If port `8888` is already being used on the school server, choose an alternate available host port and document it in your `README.md`. For example, you may map a different host port to the UI container port `8080`.
+
+Example:
+
+```text
+8890:8080
+```
 
 ## Shared Variable
 
@@ -466,6 +485,8 @@ You should also open this URL in a browser:
 ```text
 http://localhost:8888
 ```
+
+On the school server, replace `localhost` with the server hostname or IP address and use your assigned or selected host port.
 
 The homepage should show retail products. The catalog page should list products. The cart page should load successfully.
 
