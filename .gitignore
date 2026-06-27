@@ -4,6 +4,8 @@
 *.tfstate*
 *.lock.hcl
 *.log
+.env
+DEPLOYMENT_NOTES.md
 docker-compose.yml
 compose.yml
 .vscode
