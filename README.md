@@ -14,6 +14,12 @@ At the end of the project, the retail store frontend must be available at:
 http://localhost:8888
 ```
 
+## Mandatory Project
+
+This project is mandatory for all S11 and S12 students.
+
+Students who can successfully understand, containerize, troubleshoot, and deploy this type of application are building job-ready DevOps skills. Being able to deploy a real multi-service application with Linux, Git, GitHub, Docker, and Docker Compose is the kind of practical ability that can help you get a job in the market.
+
 ## Learning Objectives
 
 By completing this project, you will practice:
@@ -28,7 +34,7 @@ By completing this project, you will practice:
 - Understanding how microservices communicate inside a Docker Compose network.
 - Using AI tools responsibly to study a codebase, ask better technical questions, and understand implementation choices.
 
-This project will be reviewed and worked through in class. You are still expected to try it yourself first, document your work, and bring clear questions when you get stuck.
+This project will be explained in detail and worked through in class over two weeks. You are still expected to try it yourself first, document your work, and bring clear questions when you get stuck.
 
 ## Using AI Tools
 
@@ -221,6 +227,18 @@ orders-db
 carts-db
 checkout-redis
 rabbitmq
+```
+
+## Compose Naming Best Practice
+
+Always give each service an explicit `container_name` in your `docker-compose.yml` file. Clear container names make troubleshooting easier when you run commands such as `docker ps`, `docker logs`, and `docker exec`.
+
+Use names that match the project and service purpose. Example pattern:
+
+```text
+s12-project01-ui
+s12-project01-catalog
+s12-project01-catalog-db
 ```
 
 ## Port Publishing Requirements
