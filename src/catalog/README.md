@@ -777,3 +777,4 @@ The `src/checkout/Dockerfile` initially contained a copy of the Java Dockerfile.
 ### RabbitMQ Management UI
 
 ![RabbitMQ management interface at http://localhost:15672](Screenshots/RabbitMQ%20.png)
+ken
