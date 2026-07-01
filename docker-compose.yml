@@ -1,0 +1,219 @@
+services:
+  ui:
+    build:
+      context: ./src/ui
+    image: retail-store-ui:local
+    container_name: ui
+    ports:
+      - "8888:8080"
+    environment:
+      JAVA_OPTS: "-XX:MaxRAMPercentage=75.0 -Djava.security.egd=file:/dev/urandom"
+      SERVER_TOMCAT_ACCESSLOG_ENABLED: "true"
+      RETAIL_UI_ENDPOINTS_CATALOG: "http://catalog:8080"
+      RETAIL_UI_ENDPOINTS_CARTS: "http://carts:8080"
+      RETAIL_UI_ENDPOINTS_ORDERS: "http://orders:8080"
+      RETAIL_UI_ENDPOINTS_CHECKOUT: "http://checkout:8080"
+      RETAIL_UI_ENDPOINTS_ASSETS: "http://assets:8080"
+    depends_on:
+      - catalog
+      - carts
+      - orders
+      - checkout
+      - assets
+    networks:
+      - ui
+      - catalog
+      - carts
+      - orders
+      - checkout
+      - assets
+
+  catalog:
+    build:
+      context: ./src/catalog
+    image: retail-store-catalog:local
+    container_name: catalog
+    environment:
+      DB_ENDPOINT: "catalog-db:3306"
+      DB_NAME: "catalog"
+      DB_USERNAME: "catalog_user"
+      DB_PASSWORD: "${DB_PASSWORD}"
+      MYSQL_HOST: "catalog-db"
+      MYSQL_PORT: "3306"
+      MYSQL_DATABASE: "catalog"
+      MYSQL_USER: "catalog_user"
+      MYSQL_PASSWORD: "${DB_PASSWORD}"
+    depends_on:
+      catalog-db:
+        condition: service_healthy
+    networks:
+      - catalog
+      - catalog-db
+
+  catalog-db:
+    image: mariadb:10.9
+    container_name: catalog-db
+    environment:
+      MARIADB_ROOT_PASSWORD: "${DB_PASSWORD}"
+      MARIADB_DATABASE: "catalog"
+      MARIADB_USER: "catalog_user"
+      MARIADB_PASSWORD: "${DB_PASSWORD}"
+    volumes:
+      - catalog-db-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mariadb-admin", "ping", "-h", "localhost", "-p${DB_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - catalog-db
+
+  carts:
+    build:
+      context: ./src/cart
+    image: retail-store-carts:local
+    container_name: carts
+    environment:
+      AWS_ACCESS_KEY_ID: "dummy"
+      AWS_SECRET_ACCESS_KEY: "dummy"
+      AWS_REGION: "us-east-1"
+      CARTS_DYNAMODB_ENDPOINT: "http://carts-db:8000"
+      DYNAMODB_ENDPOINT: "http://carts-db:8000"
+    depends_on:
+      - carts-db
+    networks:
+      - carts
+      - carts-db
+
+  carts-db:
+    image: amazon/dynamodb-local:1.20.0
+    container_name: carts-db
+    command: "-jar DynamoDBLocal.jar -sharedDb -inMemory"
+    ports:
+      - "8000:8000"
+    networks:
+      - carts-db
+
+  orders:
+    build:
+      context: ./src/orders
+    image: retail-store-orders:local
+    container_name: orders
+    environment:
+      DB_ENDPOINT: "orders-db:3306"
+      DB_NAME: "orders"
+      DB_USERNAME: "orders_user"
+      DB_PASSWORD: "${DB_PASSWORD}"
+      MYSQL_HOST: "orders-db"
+      MYSQL_PORT: "3306"
+      MYSQL_DATABASE: "orders"
+      MYSQL_USER: "orders_user"
+      MYSQL_PASSWORD: "${DB_PASSWORD}"
+      RABBITMQ_HOST: "rabbitmq"
+      RABBITMQ_PORT: "5672"
+      RABBITMQ_USERNAME: "guest"
+      RABBITMQ_PASSWORD: "guest"
+    depends_on:
+      orders-db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - orders
+      - orders-db
+      - rabbitmq
+
+  orders-db:
+    image: mariadb:10.9
+    container_name: orders-db
+    environment:
+      MARIADB_ROOT_PASSWORD: "${DB_PASSWORD}"
+      MARIADB_DATABASE: "orders"
+      MARIADB_USER: "orders_user"
+      MARIADB_PASSWORD: "${DB_PASSWORD}"
+    volumes:
+      - orders-db-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mariadb-admin", "ping", "-h", "localhost", "-p${DB_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - orders-db
+
+  checkout:
+    build:
+      context: ./src/checkout
+    image: retail-store-checkout:local
+    container_name: checkout
+    environment:
+      REDIS_URL: "redis://checkout-redis:6379"
+      REDIS_HOST: "checkout-redis"
+      REDIS_PORT: "6379"
+      ENDPOINTS_ORDERS: "http://orders:8080"
+      ENDPOINTS_CARTS: "http://carts:8080"
+      ENDPOINTS_CATALOG: "http://catalog:8080"
+      RABBITMQ_HOST: "rabbitmq"
+      RABBITMQ_PORT: "5672"
+      RABBITMQ_USERNAME: "guest"
+      RABBITMQ_PASSWORD: "guest"
+    depends_on:
+      - checkout-redis
+      - orders
+      - carts
+      - catalog
+      - rabbitmq
+    networks:
+      - checkout
+      - checkout-redis
+      - orders
+      - carts
+      - catalog
+      - rabbitmq
+
+  checkout-redis:
+    image: redis:6-alpine
+    container_name: checkout-redis
+    ports:
+      - "6379:6379"
+    networks:
+      - checkout-redis
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - rabbitmq
+
+  assets:
+    build:
+      context: ./src/assets
+    image: retail-store-assets:local
+    container_name: assets
+    networks:
+      - assets
+
+volumes:
+  catalog-db-data:
+  orders-db-data:
+
+networks:
+  ui:
+  catalog:
+  carts:
+  orders:
+  checkout:
+  assets:
+  catalog-db:
+  orders-db:
+  carts-db:
+  checkout-redis:
+  rabbitmq:
