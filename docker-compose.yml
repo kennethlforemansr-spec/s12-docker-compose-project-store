@@ -2,6 +2,9 @@ services:
   ui:
     build:
       context: ./src/ui
+      dockerfile: ../../images/java17/Dockerfile
+      args:
+        JAR_PATH: target/ui-0.0.1-SNAPSHOT.jar
     image: retail-store-ui:local
     container_name: ui
     ports:
@@ -9,11 +12,12 @@ services:
     environment:
       JAVA_OPTS: "-XX:MaxRAMPercentage=75.0 -Djava.security.egd=file:/dev/urandom"
       SERVER_TOMCAT_ACCESSLOG_ENABLED: "true"
-      RETAIL_UI_ENDPOINTS_CATALOG: "http://catalog:8080"
-      RETAIL_UI_ENDPOINTS_CARTS: "http://carts:8080"
-      RETAIL_UI_ENDPOINTS_ORDERS: "http://orders:8080"
-      RETAIL_UI_ENDPOINTS_CHECKOUT: "http://checkout:8080"
-      RETAIL_UI_ENDPOINTS_ASSETS: "http://assets:8080"
+      ENDPOINTS_CATALOG: "http://catalog:8080"
+      ENDPOINTS_CARTS: "http://carts:8080"
+      ENDPOINTS_ORDERS: "http://orders:8080"
+      ENDPOINTS_CHECKOUT: "http://checkout:8080"
+      ENDPOINTS_ASSETS: "http://assets:8080"
+      ENDPOINTS_HTTP_KEEPALIVE: "true"
     depends_on:
       - catalog
       - carts
@@ -31,18 +35,18 @@ services:
   catalog:
     build:
       context: ./src/catalog
+      dockerfile: ../../images/go/Dockerfile
+      args:
+        MAIN_PATH: main.go
     image: retail-store-catalog:local
     container_name: catalog
     environment:
+      GIN_MODE: "release"
       DB_ENDPOINT: "catalog-db:3306"
-      DB_NAME: "catalog"
-      DB_USERNAME: "catalog_user"
-      DB_PASSWORD: "${DB_PASSWORD}"
-      MYSQL_HOST: "catalog-db"
-      MYSQL_PORT: "3306"
-      MYSQL_DATABASE: "catalog"
-      MYSQL_USER: "catalog_user"
-      MYSQL_PASSWORD: "${DB_PASSWORD}"
+      DB_NAME: "sampledb"
+      DB_USER: "catalog_user"
+      DB_PASSWORD: "${MYSQL_PASSWORD:-store-local-pass}"
+      DB_MIGRATE: "true"
     depends_on:
       catalog-db:
         condition: service_healthy
@@ -54,14 +58,14 @@ services:
     image: mariadb:10.9
     container_name: catalog-db
     environment:
-      MARIADB_ROOT_PASSWORD: "${DB_PASSWORD}"
-      MARIADB_DATABASE: "catalog"
+      MARIADB_ROOT_PASSWORD: "${MYSQL_PASSWORD:-store-local-pass}"
+      MARIADB_DATABASE: "sampledb"
       MARIADB_USER: "catalog_user"
-      MARIADB_PASSWORD: "${DB_PASSWORD}"
+      MARIADB_PASSWORD: "${MYSQL_PASSWORD:-store-local-pass}"
     volumes:
       - catalog-db-data:/var/lib/mysql
     healthcheck:
-      test: ["CMD", "mariadb-admin", "ping", "-h", "localhost", "-p${DB_PASSWORD}"]
+      test: ["CMD-SHELL", "mariadb-admin ping -h localhost -p\"$$MARIADB_ROOT_PASSWORD\""]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -71,6 +75,9 @@ services:
   carts:
     build:
       context: ./src/cart
+      dockerfile: ../../images/java17/Dockerfile
+      args:
+        JAR_PATH: target/carts-0.0.1-SNAPSHOT.jar
     image: retail-store-carts:local
     container_name: carts
     environment:
@@ -78,7 +85,8 @@ services:
       AWS_SECRET_ACCESS_KEY: "dummy"
       AWS_REGION: "us-east-1"
       CARTS_DYNAMODB_ENDPOINT: "http://carts-db:8000"
-      DYNAMODB_ENDPOINT: "http://carts-db:8000"
+      CARTS_DYNAMODB_CREATETABLE: "true"
+      SPRING_PROFILES_ACTIVE: "dynamodb"
     depends_on:
       - carts-db
     networks:
@@ -89,30 +97,28 @@ services:
     image: amazon/dynamodb-local:1.20.0
     container_name: carts-db
     command: "-jar DynamoDBLocal.jar -sharedDb -inMemory"
-    ports:
-      - "8000:8000"
     networks:
       - carts-db
 
   orders:
     build:
       context: ./src/orders
+      dockerfile: ../../images/java17/Dockerfile
+      args:
+        JAR_PATH: target/orders-0.0.1-SNAPSHOT.jar
     image: retail-store-orders:local
     container_name: orders
     environment:
-      DB_ENDPOINT: "orders-db:3306"
-      DB_NAME: "orders"
-      DB_USERNAME: "orders_user"
-      DB_PASSWORD: "${DB_PASSWORD}"
-      MYSQL_HOST: "orders-db"
-      MYSQL_PORT: "3306"
-      MYSQL_DATABASE: "orders"
-      MYSQL_USER: "orders_user"
-      MYSQL_PASSWORD: "${DB_PASSWORD}"
-      RABBITMQ_HOST: "rabbitmq"
-      RABBITMQ_PORT: "5672"
-      RABBITMQ_USERNAME: "guest"
-      RABBITMQ_PASSWORD: "guest"
+      JAVA_OPTS: "-XX:MaxRAMPercentage=75.0 -Djava.security.egd=file:/dev/urandom"
+      SERVER_TOMCAT_ACCESSLOG_ENABLED: "true"
+      SPRING_PROFILES_ACTIVE: "mysql,rabbitmq"
+      SPRING_DATASOURCE_WRITER_URL: "jdbc:mariadb://orders-db:3306/orders"
+      SPRING_DATASOURCE_WRITER_USERNAME: "orders_user"
+      SPRING_DATASOURCE_WRITER_PASSWORD: "${MYSQL_PASSWORD:-store-local-pass}"
+      SPRING_DATASOURCE_READER_URL: "jdbc:mariadb://orders-db:3306/orders"
+      SPRING_DATASOURCE_READER_USERNAME: "orders_user"
+      SPRING_DATASOURCE_READER_PASSWORD: "${MYSQL_PASSWORD:-store-local-pass}"
+      SPRING_RABBITMQ_HOST: "rabbitmq"
     depends_on:
       orders-db:
         condition: service_healthy
@@ -127,14 +133,14 @@ services:
     image: mariadb:10.9
     container_name: orders-db
     environment:
-      MARIADB_ROOT_PASSWORD: "${DB_PASSWORD}"
+      MARIADB_ROOT_PASSWORD: "${MYSQL_PASSWORD:-store-local-pass}"
       MARIADB_DATABASE: "orders"
       MARIADB_USER: "orders_user"
-      MARIADB_PASSWORD: "${DB_PASSWORD}"
+      MARIADB_PASSWORD: "${MYSQL_PASSWORD:-store-local-pass}"
     volumes:
       - orders-db-data:/var/lib/mysql
     healthcheck:
-      test: ["CMD", "mariadb-admin", "ping", "-h", "localhost", "-p${DB_PASSWORD}"]
+      test: ["CMD-SHELL", "mariadb-admin ping -h localhost -p\"$$MARIADB_ROOT_PASSWORD\""]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -144,19 +150,12 @@ services:
   checkout:
     build:
       context: ./src/checkout
+      dockerfile: ../../images/nodejs/Dockerfile
     image: retail-store-checkout:local
     container_name: checkout
     environment:
       REDIS_URL: "redis://checkout-redis:6379"
-      REDIS_HOST: "checkout-redis"
-      REDIS_PORT: "6379"
       ENDPOINTS_ORDERS: "http://orders:8080"
-      ENDPOINTS_CARTS: "http://carts:8080"
-      ENDPOINTS_CATALOG: "http://catalog:8080"
-      RABBITMQ_HOST: "rabbitmq"
-      RABBITMQ_PORT: "5672"
-      RABBITMQ_USERNAME: "guest"
-      RABBITMQ_PASSWORD: "guest"
     depends_on:
       - checkout-redis
       - orders
@@ -174,8 +173,6 @@ services:
   checkout-redis:
     image: redis:6-alpine
     container_name: checkout-redis
-    ports:
-      - "6379:6379"
     networks:
       - checkout-redis
 
@@ -196,6 +193,7 @@ services:
   assets:
     build:
       context: ./src/assets
+      dockerfile: Dockerfile
     image: retail-store-assets:local
     container_name: assets
     networks:

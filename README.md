@@ -562,6 +562,52 @@ http://localhost:8080
 
 Inside Docker Compose, `localhost` means the current container, not your laptop.
 
+## Deployment Notes
+
+Build and start the stack:
+
+```bash
+docker compose up --build -d
+```
+
+Check the running containers:
+
+```bash
+docker compose ps
+```
+
+Open the storefront in a browser:
+
+```text
+http://localhost:8888
+```
+
+Stop and remove the containers:
+
+```bash
+docker compose down
+```
+
+Remove volumes too if you want a fresh database state:
+
+```bash
+docker compose down -v
+```
+
+Problem encountered:
+
+- The UI initially stayed in mock mode because the Compose file used `RETAIL_UI_ENDPOINTS_*` variables. The application reads `ENDPOINTS_*`, so the frontend never reached the real backend services. Renaming the variables fixed the product image and catalog rendering path.
+
+## Screenshots
+
+The required evidence screenshots are in [`src/screenshots`](/home/ken/Projects/s12-docker-compose-project/src/screenshots):
+
+- [`docker compose ps`](/home/ken/Projects/s12-docker-compose-project/src/screenshots/Screenshot%20From%202026-07-02%2011-47-17.png)
+- [`Homepage in browser`](/home/ken/Projects/s12-docker-compose-project/src/screenshots/Screenshot%20From%202026-07-02%2011-48-25.png)
+- [`Catalog page in browser`](/home/ken/Projects/s12-docker-compose-project/src/screenshots/Screenshot%20From%202026-07-02%2011-48-42.png)
+
+The browser screenshots above cover the assignment requirements for a working website in a browser, successful homepage access, and successful catalog page access.
+
 ## Instructor Note
 
 Before sharing the repository with students, make sure completed Compose solutions are not included in the student branch. In particular, remove or hide any existing `docker-compose.yml` files that already solve the deployment.
